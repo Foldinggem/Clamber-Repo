@@ -38,11 +38,22 @@ public class PlayerMovement : MonoBehaviour
         inputY = Input.GetAxisRaw("Vertical");
 
         // Call jump function if player is grounded and key is pressed
-        if (Grounded())
+        if (Grounded() || onLadder)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Jump();
+                if (onLadder)
+                {
+                    // Jump off the ladder
+                    mounted = false;
+                    rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+                    rb.velocity = Vector2.up * jumpForce;
+                }
+                else
+                {
+                    Jump();
+                    mounted = false;
+                }
             }
         }
 
@@ -69,7 +80,7 @@ public class PlayerMovement : MonoBehaviour
             MovePlayer();
         }
 
-        
+
     }
 
     void MovePlayer()
@@ -105,7 +116,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (onLadder)
         {
-            if(inputY < 0 || inputY > 0)
+            if (inputY < 0 || inputY > 0)
             {
                 mounted = true;
                 rb.constraints = RigidbodyConstraints2D.FreezeAll;
@@ -128,7 +139,7 @@ public class PlayerMovement : MonoBehaviour
     // Trigger detects when player is touching a climbable surface
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.layer == 6)
+        if (collision.gameObject.layer == 6)
         {
             onLadder = true;
             ladderObject = collision.gameObject;
