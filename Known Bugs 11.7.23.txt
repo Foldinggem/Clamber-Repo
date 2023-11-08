@@ -6,3 +6,4 @@ Ladder bugs:
 - when horizontal input is first pressed then vertical is pressed the horizonal input can be spammed when climbing the ladder to constantly
 	detach and re-attach
 	(Solution) ladder grab cooldown.
+- When descending the ladder the player will go into the ground and teleports back
