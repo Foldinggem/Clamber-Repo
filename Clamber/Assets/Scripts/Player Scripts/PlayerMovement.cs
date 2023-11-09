@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    Rigidbody2D rb;
+    Rigidbody2D R_Body;
 
-    GameObject ladderObject;
+    GameObject LadderObject;
 
     //Player Movement Variables
     public float m_Speed;
@@ -23,7 +23,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        R_Body = GetComponent<Rigidbody2D>();
         mounted = false;
     }
 
@@ -46,8 +46,8 @@ public class PlayerMovement : MonoBehaviour
                 {
                     // Jump off the ladder
                     mounted = false;
-                    rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-                    rb.velocity = Vector2.up * jumpForce;
+                    R_Body.constraints = RigidbodyConstraints2D.FreezeRotation;
+                    R_Body.velocity = Vector2.up * jumpForce;
                 }
                 else
                 {
@@ -60,7 +60,7 @@ public class PlayerMovement : MonoBehaviour
         // If mounted on a ladder climb or descend ladder
         if (LadderMounted())
         {
-            transform.position = new Vector2(ladderObject.transform.position.x, transform.position.y);
+            transform.position = new Vector2(LadderObject.transform.position.x, transform.position.y);
             if (inputY > 0 || inputY < 0)
             {
                 transform.position += new Vector3(0, inputY * climb_Speed * Time.deltaTime, 0);
@@ -85,12 +85,12 @@ public class PlayerMovement : MonoBehaviour
 
     void MovePlayer()
     {
-        rb.position += new Vector2(inputX * m_Speed * Time.deltaTime, 0f);
+        R_Body.position += new Vector2(inputX * m_Speed * Time.deltaTime, 0f);
     }
 
     void Jump()
     {
-        rb.velocity = Vector2.up * jumpForce;
+        R_Body.velocity = Vector2.up * jumpForce;
     }
 
     // Ground check using raycasts
@@ -119,18 +119,18 @@ public class PlayerMovement : MonoBehaviour
             if (inputY < 0 || inputY > 0)
             {
                 mounted = true;
-                rb.constraints = RigidbodyConstraints2D.FreezeAll;
+                R_Body.constraints = RigidbodyConstraints2D.FreezeAll;
             }
             if (inputX < 0 && inputY == 0 || inputX > 0 && inputY == 0)
             {
                 mounted = false;
-                rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+                R_Body.constraints = RigidbodyConstraints2D.FreezeRotation;
             }
         }
         else
         {
             mounted = false;
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            R_Body.constraints = RigidbodyConstraints2D.FreezeRotation;
         }
 
         return mounted;
@@ -142,7 +142,7 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.layer == 6)
         {
             onLadder = true;
-            ladderObject = collision.gameObject;
+            LadderObject = collision.gameObject;
         }
     }
 
@@ -152,7 +152,7 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.layer == 6)
         {
             onLadder = false;
-            ladderObject = null;
+            LadderObject = null;
         }
     }
 }
