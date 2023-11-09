@@ -38,7 +38,7 @@ public class PlayerMovement : MonoBehaviour
         inputY = Input.GetAxisRaw("Vertical");
 
         // Call jump function if player is grounded and key is pressed
-        if (Grounded() || onLadder)
+        if (Grounded() || LadderMounted())
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
