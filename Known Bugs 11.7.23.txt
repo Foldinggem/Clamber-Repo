@@ -1,6 +1,5 @@
 Movement bugs:
 - collision detection with walls is not exact and allows the character to push into the wall
-- no built in momentum when in the air (the when keys are not pressed the character stops immediatly
 
 Ladder bugs:
 - when horizontal input is first pressed then vertical is pressed the horizonal input can be spammed when climbing the ladder to constantly
