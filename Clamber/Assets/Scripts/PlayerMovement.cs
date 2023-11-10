@@ -62,8 +62,9 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // Testing Here
-        
+        // QOL Update: If a player is mounted to a ladder and drops with d or a, they still have 0.3 of a second to hit space to jump
+        //             This is to prevent the player from hitting space and (a/d) at the same time and not jumping
+
         if (LadderTimer() && onLadder)
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -71,9 +72,6 @@ public class PlayerMovement : MonoBehaviour
                 Jump();
             }
         }
-
-        Debug.Log(LadderTimer());
-
 
         // If mounted on a ladder climb or descend ladder
         if (LadderMounted())
@@ -152,7 +150,7 @@ public class PlayerMovement : MonoBehaviour
         return mounted;
     }
 
-
+    // Delay jump function
     bool LadderTimer()
     {
         if (LadderMounted())
@@ -168,7 +166,6 @@ public class PlayerMovement : MonoBehaviour
         {
             delayJump = false;
         }
-
         return delayJump;
     }
 
