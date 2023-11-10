@@ -14,6 +14,11 @@ public class PlayerMovement : MonoBehaviour
     float inputX;
     float inputY;
 
+    // Delay Jump Variables
+    private bool delayJump = false;
+    private float delayDuration = 0.4f; // Delay duration in seconds
+    private float delayEndTime;
+
     int playerLayer;
     int ladderLayer;
     int raycastIgnoreLayers;
@@ -57,6 +62,17 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
+        // QOL Update: If a player is mounted to a ladder and drops with d or a, they still have 0.3 of a second to hit space to jump
+        //             This is to prevent the player from hitting space and (a/d) at the same time and not jumping
+
+        if (LadderTimer() && onLadder)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Jump();
+            }
+        }
+
         // If mounted on a ladder climb or descend ladder
         if (LadderMounted())
         {
@@ -79,8 +95,6 @@ public class PlayerMovement : MonoBehaviour
         {
             MovePlayer();
         }
-
-
     }
 
     void MovePlayer()
@@ -135,6 +149,28 @@ public class PlayerMovement : MonoBehaviour
 
         return mounted;
     }
+
+    // Delay jump function
+    bool LadderTimer()
+    {
+        if (LadderMounted())
+        {
+            delayJump = true;
+
+            // Set the end time for the delay
+            delayEndTime = Time.time + delayDuration;
+        }
+
+        // Check if the delay period has passed
+        if (delayJump && Time.time >= delayEndTime)
+        {
+            delayJump = false;
+        }
+        return delayJump;
+    }
+
+
+
 
     // Trigger detects when player is touching a climbable surface
     private void OnTriggerEnter2D(Collider2D collision)
