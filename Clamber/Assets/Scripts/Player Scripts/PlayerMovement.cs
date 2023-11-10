@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    Rigidbody2D R_Body;
+    Rigidbody2D rb;
 
-    GameObject LadderObject;
+    GameObject ladderObject;
 
     //Player Movement Variables
     public float m_Speed;
@@ -13,6 +13,12 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce;
     float inputX;
     float inputY;
+    float lastInputX;
+
+    // Delay Jump Variables
+    private bool delayJump = false;
+    private float delayDuration = 0.4f; // Delay duration in seconds
+    private float delayEndTime;
 
     int playerLayer;
     int ladderLayer;
@@ -23,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        R_Body = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
         mounted = false;
     }
 
@@ -46,8 +52,8 @@ public class PlayerMovement : MonoBehaviour
                 {
                     // Jump off the ladder
                     mounted = false;
-                    R_Body.constraints = RigidbodyConstraints2D.FreezeRotation;
-                    R_Body.velocity = Vector2.up * jumpForce;
+                    rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+                    rb.velocity = Vector2.up * jumpForce;
                 }
                 else
                 {
@@ -57,10 +63,21 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
+        // QOL Update: If a player is mounted to a ladder and drops with d or a, they still have 0.3 of a second to hit space to jump
+        //             This is to prevent the player from hitting space and (a/d) at the same time and not jumping
+
+        if (LadderTimer() && onLadder)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Jump();
+            }
+        }
+
         // If mounted on a ladder climb or descend ladder
         if (LadderMounted())
         {
-            transform.position = new Vector2(LadderObject.transform.position.x, transform.position.y);
+            transform.position = new Vector2(ladderObject.transform.position.x, transform.position.y);
             if (inputY > 0 || inputY < 0)
             {
                 transform.position += new Vector3(0, inputY * climb_Speed * Time.deltaTime, 0);
@@ -79,18 +96,25 @@ public class PlayerMovement : MonoBehaviour
         {
             MovePlayer();
         }
-
-
     }
 
     void MovePlayer()
     {
-        R_Body.position += new Vector2(inputX * m_Speed * Time.deltaTime, 0f);
+        // If the player is in the air, apply a constant force in the current direction
+        if (!Grounded())
+        {
+            rb.velocity = new Vector2(inputX * m_Speed, rb.velocity.y);
+        }
+        else
+        {
+            // If the player is on the ground, move based on user input
+            rb.position += new Vector2(inputX * m_Speed * Time.deltaTime, 0f);
+        }
     }
 
     void Jump()
     {
-        R_Body.velocity = Vector2.up * jumpForce;
+        rb.velocity = Vector2.up * jumpForce;
     }
 
     // Ground check using raycasts
@@ -119,22 +143,44 @@ public class PlayerMovement : MonoBehaviour
             if (inputY < 0 || inputY > 0)
             {
                 mounted = true;
-                R_Body.constraints = RigidbodyConstraints2D.FreezeAll;
+                rb.constraints = RigidbodyConstraints2D.FreezeAll;
             }
             if (inputX < 0 && inputY == 0 || inputX > 0 && inputY == 0)
             {
                 mounted = false;
-                R_Body.constraints = RigidbodyConstraints2D.FreezeRotation;
+                rb.constraints = RigidbodyConstraints2D.FreezeRotation;
             }
         }
         else
         {
             mounted = false;
-            R_Body.constraints = RigidbodyConstraints2D.FreezeRotation;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         }
 
         return mounted;
     }
+
+    // Delay jump function
+    bool LadderTimer()
+    {
+        if (LadderMounted())
+        {
+            delayJump = true;
+
+            // Set the end time for the delay
+            delayEndTime = Time.time + delayDuration;
+        }
+
+        // Check if the delay period has passed
+        if (delayJump && Time.time >= delayEndTime)
+        {
+            delayJump = false;
+        }
+        return delayJump;
+    }
+
+
+
 
     // Trigger detects when player is touching a climbable surface
     private void OnTriggerEnter2D(Collider2D collision)
@@ -142,7 +188,7 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.layer == 6)
         {
             onLadder = true;
-            LadderObject = collision.gameObject;
+            ladderObject = collision.gameObject;
         }
     }
 
@@ -152,7 +198,7 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.layer == 6)
         {
             onLadder = false;
-            LadderObject = null;
+            ladderObject = null;
         }
     }
 }
