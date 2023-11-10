@@ -183,10 +183,11 @@ public class PlayerMovement : MonoBehaviour
 
 
     // Trigger detects when player is touching a climbable surface
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.gameObject.layer == 6)
         {
+            
             onLadder = true;
             ladderObject = collision.gameObject;
         }
