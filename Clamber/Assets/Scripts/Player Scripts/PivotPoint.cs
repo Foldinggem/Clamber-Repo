@@ -39,7 +39,7 @@ public class PivotPoint : MonoBehaviour
         return Camera.main.ScreenToWorldPoint(mousePos);
     }
 
-    public void ChangeLocked(bool newLocked)
+    public void PivotLocked(bool newLocked)
     {
         locked = newLocked;
     }

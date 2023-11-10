@@ -4,71 +4,123 @@ using UnityEngine;
 
 public class GrappleHook : MonoBehaviour
 {
-    public PivotPoint PivotPointScript;
+    #region Class Variables
+    PivotPoint PivotPointScript;
 
-    public LineRenderer GrappleLine;
+    // Spring joint attached to the player
+    SpringJoint2D Joint;
 
-    public GameObject PivotPoint;
-    public GameObject Player;
+    // Line renderer to act as grapple cable
+    LineRenderer Line;
 
-    public Vector3 launchPoint;
-    public Vector3 mousePos;
-    Vector2 mouseClickedPos;
+    // Parent objects
+    GameObject Player;
+    GameObject PivotPointObj;
 
-    bool canUpdateClickPos;
+    Vector3 jointPosition;
 
-    public float maxGrappleLength;
-    public float grappleSpeed;
-    float currentGrappleLength;
+    // Layermask values for the grapple raycast to ignore
+    int playerLayer = 1 << 3;
+    int ladderLayer = 1 << 6;
+    int ignoreLayers;
+
+    // Max grapple distance
+    public float maxLength;
+    #endregion
 
     private void Start()
     {
-        canUpdateClickPos = true;
-        currentGrappleLength = 0;
+        // Set script reference
+        PivotPointScript = gameObject.transform.parent.gameObject.transform.parent.GetComponent<PivotPoint>();
+
+        // Set parent references
+        Player = gameObject.transform.parent.gameObject.transform.parent.gameObject;
+        PivotPointObj = gameObject.transform.parent.gameObject;
+
+        // Get joint from player parent and assign it to Joint,
+        Joint = Player.GetComponent<SpringJoint2D>();
+        jointPosition = Joint.connectedBody.transform.position;
+        Joint.enabled = false;
+
+        // Get line renderer
+        Line = gameObject.GetComponent<LineRenderer>();
+        Line.enabled = false;
+
+        // Combine layermask values
+        ignoreLayers = playerLayer + ladderLayer;
     }
 
     private void Update()
     {
-        launchPoint = transform.position;
-        GrappleLine.SetPosition(0, launchPoint);
-        mousePos = PivotPointScript.MousePositionOnScreen();
-        GrappleObject();
+        Joint.connectedBody.transform.position = jointPosition;
+
+        SetJoint();
+        TrackPointWithGun();
+        DrawLine();
     }
 
-    void GrappleObject()
+    // Set position of the joint
+    void SetJoint()
     {
-        if (canUpdateClickPos)
+        // Use raycast to set position of joint on the object directed to
+        if (Input.GetMouseButtonDown(0))
         {
-            if (Input.GetMouseButtonDown(0))
+            Ray2D ray = new Ray2D(transform.position, PointDirection(transform.position, MousePosition()));
+            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, maxLength, ~ignoreLayers);
+
+            if (hit.collider != null)
             {
-                PivotPointScript.ChangeLocked(true);
-                mouseClickedPos = mousePos;
-                canUpdateClickPos = false;
+                Joint.enabled = true;
+                jointPosition = hit.point;
             }
+        }
+        // Disable joint
+        if (Input.GetMouseButtonUp(0))
+        {
+            Joint.enabled = false;
+        }
+    }
+
+    // Set the gun to follow the joint position relative to the player
+    void TrackPointWithGun()
+    {
+        // If grapple is deployed
+        if (Joint.enabled)
+        {
+            PivotPointScript.PivotLocked(true);
+            Vector3 direction = PointDirection(transform.position, jointPosition).normalized;
+            PivotPointObj.transform.position = Player.transform.position + (direction * PivotPointScript.pivotDistanceFromPlayer);
         }
         else
         {
-            if (currentGrappleLength < maxGrappleLength)
-            {
-                currentGrappleLength += grappleSpeed * Time.deltaTime;
-            }
-            GrappleLine.SetPosition(1, transform.position + PointDirection(transform.position, mouseClickedPos) * currentGrappleLength);
-            PivotPoint.transform.position = Player.transform.position + PointDirection(Player.transform.position, mouseClickedPos);
-
-            if (Input.GetMouseButtonUp(0))
-            {
-                currentGrappleLength = 0;
-                PivotPointScript.ChangeLocked(false);
-                canUpdateClickPos = true;
-            }
-        }
-        
-        if(canUpdateClickPos)
-        {
-            GrappleLine.SetPosition(1, transform.position);
+            PivotPointScript.PivotLocked(false);
         }
     }
 
+    // Draw the grapple line from gun to the joint
+    void DrawLine()
+    {
+        // Set both ends of the line to their supposed positions
+        Line.SetPosition(0, transform.position);
+        if (Joint.enabled)
+        {
+            Line.enabled = true;
+            Line.SetPosition(1, jointPosition);
+        }
+        else
+        {
+            Line.enabled = false;
+        }
+    }
+
+    // Get mouse position
+    Vector2 MousePosition()
+    {
+        Vector2 mousePos = Input.mousePosition;
+        return Camera.main.ScreenToWorldPoint(mousePos);
+    }
+
+    // Get relative direction formula
     Vector3 PointDirection(Vector2 origin, Vector2 destination)
     {
         return (destination - origin).normalized;
