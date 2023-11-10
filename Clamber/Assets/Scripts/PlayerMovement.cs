@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce;
     float inputX;
     float inputY;
+    float lastInputX;
 
     // Delay Jump Variables
     private bool delayJump = false;
@@ -99,7 +100,16 @@ public class PlayerMovement : MonoBehaviour
 
     void MovePlayer()
     {
-        rb.position += new Vector2(inputX * m_Speed * Time.deltaTime, 0f);
+        // If the player is in the air, apply a constant force in the current direction
+        if (!Grounded())
+        {
+            rb.velocity = new Vector2(inputX * m_Speed, rb.velocity.y);
+        }
+        else
+        {
+            // If the player is on the ground, move based on user input
+            rb.position += new Vector2(inputX * m_Speed * Time.deltaTime, 0f);
+        }
     }
 
     void Jump()
