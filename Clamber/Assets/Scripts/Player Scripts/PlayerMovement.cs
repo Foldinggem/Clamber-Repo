@@ -111,6 +111,8 @@ public class PlayerMovement : MonoBehaviour
         {
             // If the player is on the ground, move based on user input
             rb.position += new Vector2(inputX * m_Speed * Time.deltaTime, 0f);
+            
+            FindObjectOfType<AudioManager>().Play("Grass Walking");
         }
     }
 
