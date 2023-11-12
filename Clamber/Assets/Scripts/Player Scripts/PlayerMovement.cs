@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     float inputX;
     float inputY;
     float lastInputX;
+    float timer;
 
     // Delay Jump Variables
     private bool delayJump = false;
@@ -33,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         mounted = false;
+        timer = 0;
     }
 
     private void Update()
@@ -111,8 +113,18 @@ public class PlayerMovement : MonoBehaviour
         {
             // If the player is on the ground, move based on user input
             rb.position += new Vector2(inputX * m_Speed * Time.deltaTime, 0f);
-            
-            FindObjectOfType<AudioManager>().Play("Grass Walking");
+
+            float moveSoundTimer = FindObjectOfType<AudioManager>().SoundLength("Grass Walking");
+            if (timer <= 0)
+            {
+                timer = moveSoundTimer;
+                FindObjectOfType<AudioManager>().Play("Grass Walking");
+            }
+            if (timer > 0)
+            {
+                timer -= Time.deltaTime;
+                Debug.Log(timer);
+            }
         }
     }
 
@@ -175,7 +187,6 @@ public class PlayerMovement : MonoBehaviour
             delayEndTime = Time.time + delayDuration;
         }
 
-        // Check if the delay period has passed
         if (delayJump && Time.time >= delayEndTime)
         {
             delayJump = false;
