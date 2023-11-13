@@ -1,5 +1,6 @@
 Movement bugs:
 - collision detection with walls is not exact and allows the character to push into the wall
+- when moving in the air against a wall the player sticks to the wall
 
 Ladder bugs:
 - when horizontal input is first pressed then vertical is pressed the horizonal input can be spammed when climbing the ladder to constantly
