@@ -70,6 +70,8 @@ public class GrappleHook : MonoBehaviour
 
             if (hit.collider != null)
             {
+                FindObjectOfType<AudioManager>().Play("Grapple Throw");
+                //FindObjectOfType<AudioManager>().Play("Grapple Hit");
                 Joint.enabled = true;
                 jointPosition = hit.point;
             }
