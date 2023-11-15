@@ -1,11 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GrappleHook : MonoBehaviour
 {
     #region Class Variables
     PivotPoint PivotPointScript;
+
+    PlayerManager Instance;
 
     // Spring joint attached to the player
     SpringJoint2D Joint;
@@ -19,11 +19,6 @@ public class GrappleHook : MonoBehaviour
 
     Vector3 jointPosition;
 
-    // Layermask values for the grapple raycast to ignore
-    int playerLayer = 1 << 3;
-    int ladderLayer = 1 << 6;
-    int ignoreLayers;
-
     // Max grapple distance
     public float maxLength;
     #endregion
@@ -32,6 +27,7 @@ public class GrappleHook : MonoBehaviour
     {
         // Set script reference
         PivotPointScript = gameObject.transform.parent.gameObject.transform.parent.GetComponent<PivotPoint>();
+        Instance = PlayerManager.Instance;
 
         // Set parent references
         Player = gameObject.transform.parent.gameObject.transform.parent.gameObject;
@@ -45,9 +41,6 @@ public class GrappleHook : MonoBehaviour
         // Get line renderer
         Line = gameObject.GetComponent<LineRenderer>();
         Line.enabled = false;
-
-        // Combine layermask values
-        ignoreLayers = playerLayer + ladderLayer;
     }
 
     private void Update()
@@ -65,13 +58,12 @@ public class GrappleHook : MonoBehaviour
         // Use raycast to set position of joint on the object directed to
         if (Input.GetMouseButtonDown(0))
         {
-            Ray2D ray = new Ray2D(transform.position, PointDirection(transform.position, MousePosition()));
-            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, maxLength, ~ignoreLayers);
+            Ray2D ray = new Ray2D(transform.position, Instance.RelativeDirection(transform.position, Instance.MousePosition()));
+            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, maxLength, ~Instance.ignoreLayers);
 
             if (hit.collider != null)
             {
                 FindObjectOfType<AudioManager>().Play("Grapple Throw");
-                //FindObjectOfType<AudioManager>().Play("Grapple Hit");
                 Joint.enabled = true;
                 jointPosition = hit.point;
             }
@@ -89,13 +81,7 @@ public class GrappleHook : MonoBehaviour
         // If grapple is deployed
         if (Joint.enabled)
         {
-            PivotPointScript.PivotLocked(true);
-            Vector3 direction = PointDirection(transform.position, jointPosition).normalized;
-            PivotPointObj.transform.position = Player.transform.position + (direction * PivotPointScript.pivotDistanceFromPlayer);
-        }
-        else
-        {
-            PivotPointScript.PivotLocked(false);
+            PivotPointObj.transform.position = Player.transform.position + (Instance.RelativeDirection(transform.position, jointPosition).normalized * PivotPointScript.pivotDistanceFromPlayer);
         }
     }
 
@@ -113,18 +99,5 @@ public class GrappleHook : MonoBehaviour
         {
             Line.enabled = false;
         }
-    }
-
-    // Get mouse position
-    Vector2 MousePosition()
-    {
-        Vector2 mousePos = Input.mousePosition;
-        return Camera.main.ScreenToWorldPoint(mousePos);
-    }
-
-    // Get relative direction formula
-    Vector3 PointDirection(Vector2 origin, Vector2 destination)
-    {
-        return (destination - origin).normalized;
     }
 }
