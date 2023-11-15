@@ -136,9 +136,11 @@ GameObject:
   - component: {fileID: 338265209}
   - component: {fileID: 338265213}
   - component: {fileID: 338265208}
+  - component: {fileID: 338265215}
   - component: {fileID: 338265212}
   - component: {fileID: 338265214}
-  - component: {fileID: 338265215}
+  - component: {fileID: 338265216}
+  - component: {fileID: 338265217}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -275,7 +277,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Speed: 6
-  climb_Speed: 5
   jumpForce: 15
 --- !u!61 &338265213
 BoxCollider2D:
@@ -337,6 +338,35 @@ SpringJoint2D:
   m_Distance: 4.2742953
   m_DampingRatio: 0
   m_Frequency: 0
+--- !u!114 &338265216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338265207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 660ad8183d9446c4fbefc7bfcda8689b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  climb_Speed: 5
+--- !u!114 &338265217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338265207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2908f32eaf09ea2458d594b891fba119, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  state: 0
+  R_Body: {fileID: 0}
+  ignoreLayers: 0
+  jumpException: 0
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -645,7 +675,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1086961439}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.505, y: -0.98, z: 0}
+  m_LocalPosition: {x: 3.505, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1621,7 +1651,7 @@ GameObject:
   - component: {fileID: 1980526242}
   - component: {fileID: 1980526245}
   - component: {fileID: 1980526244}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Tilemap_Interactable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
