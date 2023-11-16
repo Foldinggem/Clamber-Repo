@@ -1,0 +1,12 @@
+Create an enemy
+	-First basic enemy that the player runs into
+	-Snake enemy that moves slow and lunges when too close
+	-Follows player if in a short range of the snake
+	-When programming enemy damage, create an interface called Idamageable to reuse the function
+
+Create smooth camera movement with the player
+	-Camera follows the player with a little bit of lag depending on the direction the player is moving
+	-Amount of lag should be determined by the player velocity
+
+Grapple momentum build up
+	-Create a new script for grapple movement that allows the player to sway and build momentum.

@@ -10,7 +10,7 @@ public class LadderClimb : MonoBehaviour
 
     // Delay Jump Variables
     private bool delayJump = false;
-    private float delayDuration = 0.4f; // Delay duration in seconds
+    private float delayDuration = 0.2f; // Delay duration in seconds
     private float delayEndTime;
 
     bool mounted;
@@ -28,9 +28,10 @@ public class LadderClimb : MonoBehaviour
         // If mounted on a ladder climb or descend ladder
         if (LadderMounted())
         {
+            Instance.state = PlayerManager.PlayerState.Climbing;
             transform.position = new Vector2(ladderObject.transform.position.x, transform.position.y);
             if (Instance.M_Input().y > 0 || Instance.M_Input().y < 0)
-            {
+            {               
                 transform.position += new Vector3(0, Instance.M_Input().y * climb_Speed * Time.deltaTime, 0);
             }
         }

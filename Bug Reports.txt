@@ -1,9 +1,9 @@
 Movement bugs:
-- collision detection with walls is not exact and allows the character to push into the wall
-- when moving in the air against a wall the player sticks to the wall
+- (High Priority) when moving in the air against a wall the player sticks to the wall
 
 Ladder bugs:
-- when horizontal input is first pressed then vertical is pressed the horizonal input can be spammed when climbing the ladder to constantly
+- (Low Priority) when horizontal input is first pressed then vertical is pressed the horizonal input can be spammed when climbing the ladder to constantly
 	detach and re-attach
 	(Solution) ladder grab cooldown.
-- When descending the ladder the player will go into the ground and teleports back
+- (Medium Priority) When going completly up or down a ladder the player will not re-attach to the ladder unless they move away and come back
+- (Low Priority) When at the base of the ladder if down is immediatly pressed instead of up the player vibrates in place
