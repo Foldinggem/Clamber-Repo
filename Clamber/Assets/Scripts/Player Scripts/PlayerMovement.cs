@@ -31,6 +31,7 @@ public class PlayerMovement : MonoBehaviour
         // If movement keys pressed move character
         if (Instance.M_Input().x > 0 || Instance.M_Input().x < 0)
         {
+            Instance.state = PlayerManager.PlayerState.BaseState;
             MovePlayer();
         }
     }

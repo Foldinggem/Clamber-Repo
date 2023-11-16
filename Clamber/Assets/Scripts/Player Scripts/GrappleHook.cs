@@ -4,7 +4,6 @@ public class GrappleHook : MonoBehaviour
 {
     #region Class Variables
     PivotPoint PivotPointScript;
-
     PlayerManager Instance;
 
     // Spring joint attached to the player
@@ -50,6 +49,15 @@ public class GrappleHook : MonoBehaviour
         SetJoint();
         TrackPointWithGun();
         DrawLine();
+
+        if(Joint.enabled)
+        {
+            Instance.state = PlayerManager.PlayerState.Grappling;
+        }
+        else
+        {
+            Instance.PlayerMovementScript.enabled = true;
+        }
     }
 
     // Set position of the joint
@@ -99,5 +107,12 @@ public class GrappleHook : MonoBehaviour
         {
             Line.enabled = false;
         }
+    }
+
+    // When disabled by player manager reset gameobjects
+    private void OnDisable()
+    {
+        Joint.enabled = false;
+        Line.enabled = false;
     }
 }
